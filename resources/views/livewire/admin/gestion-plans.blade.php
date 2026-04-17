@@ -17,6 +17,7 @@
                     <th>Slug</th>
                     <th>Prix</th>
                     <th>Durée</th>
+                    <th>Investissement</th>
                     <th>Statut</th>
                     <th>Actions</th>
                 </tr>
@@ -28,6 +29,16 @@
                         <td style="font-family:monospace; color:var(--c-muted); font-size:0.85rem;">{{ $plan->slug }}</td>
                         <td style="font-family:var(--font-display); font-weight:700; color:var(--c-green);">{{ $plan->prixFormate() }}</td>
                         <td style="color:var(--c-muted);">{{ $plan->duree_jours }} jours</td>
+                        <td>
+                            @if($plan->est_investissement)
+                                <span class="pill pill-green">{{ $plan->taux_journalier }}%/j</span>
+                                <div style="font-size:0.75rem; color:var(--c-muted); margin-top:3px;">
+                                    Seuil : {{ number_format($plan->seuil_retrait, 0, ',', ' ') }} XOF
+                                </div>
+                            @else
+                                <span class="pill pill-gray">Non</span>
+                            @endif
+                        </td>
                         <td>
                             <span class="pill {{ $plan->actif ? 'pill-green' : 'pill-gray' }}">
                                 {{ $plan->actif ? 'Actif' : 'Inactif' }}
@@ -84,6 +95,14 @@
                     <div>
                         <div style="font-family:var(--font-display); font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-bottom:2px;">Durée</div>
                         <span style="color:var(--c-muted); font-size:0.85rem;">{{ $plan->duree_jours }} jours</span>
+                    </div>
+                    <div>
+                        <div style="font-family:var(--font-display); font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-bottom:2px;">Investissement</div>
+                        @if($plan->est_investissement)
+                            <span class="pill pill-green" style="font-size:0.75rem;">{{ $plan->taux_journalier }}%/j</span>
+                        @else
+                            <span style="color:var(--c-muted); font-size:0.85rem;">Non</span>
+                        @endif
                     </div>
                 </div>
 
@@ -161,6 +180,41 @@
                     <label for="actif" style="font-family:var(--font-display); font-size:0.82rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--c-text); cursor:pointer;">
                         Plan actif (visible aux utilisateurs)
                     </label>
+                </div>
+
+                {{-- Séparateur investissement --}}
+                <div style="border-top:1px solid var(--c-border); padding-top:1rem; margin-bottom:1rem;">
+                    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
+                        <input wire:model.live="est_investissement" type="checkbox" id="est_investissement"
+                            style="width:16px; height:16px; cursor:pointer; flex-shrink:0;">
+                        <label for="est_investissement" style="font-family:var(--font-display); font-size:0.82rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--c-green); cursor:pointer;">
+                            Plan investissement
+                        </label>
+                    </div>
+
+                    @if($est_investissement)
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                        <div>
+                            <label style="display:block; font-family:var(--font-display); font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-bottom:0.4rem;">
+                                Taux journalier (%) *
+                            </label>
+                            <input wire:model="taux_journalier" type="number" min="0.01" max="100" step="0.01" placeholder="0.10"
+                                style="width:100%; background:var(--c-bg3); border:1px solid var(--c-border); color:var(--c-text); padding:9px 12px; font-size:0.9rem; outline:none;">
+                            <div style="font-size:0.72rem; color:var(--c-muted); margin-top:4px;">
+                                @if($taux_journalier && $prix)
+                                    = {{ number_format($prix * $taux_journalier / 100, 0, ',', ' ') }} XOF/jour
+                                @endif
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display:block; font-family:var(--font-display); font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-bottom:0.4rem;">
+                                Seuil de retrait (XOF) *
+                            </label>
+                            <input wire:model="seuil_retrait" type="number" min="1" placeholder="5000"
+                                style="width:100%; background:var(--c-bg3); border:1px solid var(--c-border); color:var(--c-text); padding:9px 12px; font-size:0.9rem; outline:none;">
+                        </div>
+                    </div>
+                    @endif
                 </div>
 
                 <div style="display:flex; justify-content:flex-end; gap:0.75rem; padding-top:1rem; border-top:1px solid var(--c-border);">

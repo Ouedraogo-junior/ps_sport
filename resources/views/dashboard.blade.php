@@ -198,6 +198,9 @@
                 @endforelse
             </div>
 
+            {{-- Bloc investissement --}}
+            @include('partials.dashboard-investissement')
+
             {{-- Infos compte --}}
             <div style="background:var(--c-bg2); border:1px solid var(--c-border); padding:1.5rem;">
                 <div style="font-family:var(--font-display); font-size:0.72rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--c-muted); margin-bottom:1rem;">
@@ -242,6 +245,15 @@
                         Voir les coupons →
                     </a>
                 </div>
+
+                @if($estInvestisseur)
+                    <a href="{{ route('dashboard.upgrade') }}"
+                    style="display:flex; align-items:center; justify-content:center; width:100%; margin-top:0.75rem; background:transparent; border:1px solid var(--c-gold); color:var(--c-gold); padding:11px; font-family:var(--font-display); font-weight:700; font-size:0.82rem; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; transition:all 0.2s;"
+                    onmouseover="this.style.background='rgba(255,193,7,0.08)'"
+                    onmouseout="this.style.background='transparent'">
+                        ⬆ Upgrade Plan
+                    </a>
+                @endif
 
             @else
 
@@ -478,6 +490,7 @@
 
                         <div style="margin-top:1rem; text-align:center; font-size:0.78rem; color:var(--c-muted);">
                             Horaires d'activation : Lun–Sam, 8h–20h
+
                         </div>
 
                     </div>

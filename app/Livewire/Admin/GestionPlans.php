@@ -20,6 +20,9 @@ class GestionPlans extends Component
     public int    $prix        = 0;
     public int    $duree_jours = 30;
     public bool   $actif       = true;
+    public bool   $est_investissement = false;
+    public string $taux_journalier    = '';
+    public string $seuil_retrait      = '';
 
     // -------------------------------------------------------
     // Validation
@@ -36,6 +39,9 @@ class GestionPlans extends Component
             'prix'        => 'required|integer|min:0',
             'duree_jours' => 'required|integer|min:1',
             'actif'       => 'boolean',
+            'est_investissement'=> 'boolean',
+            'taux_journalier'   => $this->est_investissement ? 'required|numeric|min:0.01|max:100' : 'nullable',
+            'seuil_retrait'     => $this->est_investissement ? 'required|integer|min:1' : 'nullable',
         ];
     }
 
@@ -46,6 +52,10 @@ class GestionPlans extends Component
         'prix.required'        => 'Le prix est obligatoire.',
         'duree_jours.required' => 'La durée est obligatoire.',
         'duree_jours.min'      => 'La durée doit être d\'au moins 1 jour.',
+        'taux_journalier.required' => 'Le taux journalier est obligatoire pour un plan investissement.',
+        'taux_journalier.numeric'  => 'Le taux doit être un nombre.',
+        'seuil_retrait.required'   => 'Le seuil de retrait est obligatoire pour un plan investissement.',
+        'seuil_retrait.min'        => 'Le seuil doit être supérieur à 0.',
     ];
 
     // -------------------------------------------------------
@@ -81,6 +91,9 @@ class GestionPlans extends Component
         $this->prix        = $plan->prix;
         $this->duree_jours = $plan->duree_jours;
         $this->actif       = $plan->actif;
+        $this->est_investissement= (bool) $plan->est_investissement;
+        $this->taux_journalier   = $plan->taux_journalier ?? '';
+        $this->seuil_retrait     = $plan->seuil_retrait ?? '';
 
         $this->modeEdition = true;
         $this->showModal   = true;
@@ -94,11 +107,14 @@ class GestionPlans extends Component
         $this->validate();
 
         $data = [
-            'nom'         => $this->nom,
-            'slug'        => $this->slug,
-            'prix'        => $this->prix,
-            'duree_jours' => $this->duree_jours,
-            'actif'       => $this->actif,
+            'nom'                => $this->nom,
+            'slug'               => $this->slug,
+            'prix'               => $this->prix,
+            'duree_jours'        => $this->duree_jours,
+            'actif'              => $this->actif,
+            'est_investissement' => $this->est_investissement,
+            'taux_journalier'    => $this->est_investissement ? $this->taux_journalier : null,
+            'seuil_retrait'      => $this->est_investissement ? $this->seuil_retrait : null,
         ];
 
         if ($this->modeEdition) {
@@ -137,12 +153,15 @@ class GestionPlans extends Component
     // -------------------------------------------------------
     private function resetForm(): void
     {
-        $this->planId      = null;
-        $this->nom         = '';
-        $this->slug        = '';
-        $this->prix        = 0;
-        $this->duree_jours = 30;
-        $this->actif       = true;
+        $this->planId            = null;
+        $this->nom               = '';
+        $this->slug              = '';
+        $this->prix              = 0;
+        $this->duree_jours       = 30;
+        $this->actif             = true;
+        $this->est_investissement= false;
+        $this->taux_journalier   = '';
+        $this->seuil_retrait     = '';
         $this->resetValidation();
     }
 

@@ -37,6 +37,11 @@ class HomeController extends Controller
                             ->where('statut_resultat', 'gagne')
                             ->count();
 
+        $plansInvestissement = Plan::actifs()
+                        ->where('est_investissement', true)
+                        ->orderBy('prix')
+                        ->get();
+
         // SEO
         SEO::setTitle('Pronostics Sportifs Premium — ' . config('app.name'));
         SEO::setDescription('Coupons sportifs analysés quotidiennement au Burkina Faso. Paiement via Orange Money et Moov Money.');
@@ -51,6 +56,7 @@ class HomeController extends Controller
             'totalAbonnes',
             'captures',
             'totalCaptures',
+            'plansInvestissement',
         ));
     }
 }

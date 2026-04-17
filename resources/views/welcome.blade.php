@@ -314,6 +314,9 @@
 
 </section>
 
+{{-- ── INVESTISSEMENT --}}
+@include('partials.home-investissement')
+
 {{-- ── CTA FINAL ───────────────────────────────────────── --}}
 <section style="padding:4rem 1.5rem; text-align:center; background:var(--c-bg2); border-top:1px solid var(--c-border);">
     <h2 style="font-family:var(--font-display); font-size:clamp(1.5rem, 4vw, 2rem); font-weight:800; letter-spacing:0.03em; text-transform:uppercase; margin-bottom:1rem;">

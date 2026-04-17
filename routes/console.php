@@ -9,3 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('app:mettre-a-jour-scores')->hourly();
+
+Schedule::command('investissement:crediter')->dailyAt('00:00');

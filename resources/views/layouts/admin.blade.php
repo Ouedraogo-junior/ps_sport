@@ -473,6 +473,14 @@
                 <span class="sidebar-count">{{ \App\Models\Paiement::enAttente()->count() }}</span>
             @endif
         </a>
+
+        <a href="{{ route('admin.retraits.index') }}" class="sidebar-link {{ request()->routeIs('admin.retraits*') ? 'active' : '' }}">
+            <span class="icon">💸</span> Retraits
+            @if(\App\Models\DemandeRetrait::where('statut', 'en_attente')->count() > 0)
+                <span class="sidebar-count">{{ \App\Models\DemandeRetrait::where('statut', 'en_attente')->count() }}</span>
+            @endif
+        </a>
+
         <a href="{{ route('admin.codes.index') }}" class="sidebar-link {{ request()->routeIs('admin.codes*') ? 'active' : '' }}">
             <span class="icon">🔑</span> Codes d'accès
         </a>
@@ -544,6 +552,14 @@
             </a>
             <a href="{{ route('admin.codes.index') }}" class="sidebar-link {{ request()->routeIs('admin.codes*') ? 'active' : '' }}">
                 <span class="icon">🔑</span> Codes d'accès
+            </a>
+
+            <a href="{{ route('admin.retraits.index') }}" class="sidebar-link {{ request()->routeIs('admin.retraits*') ? 'active' : '' }}">
+                <span class="icon">💸</span> Retraits
+                @php $retraitsEnAttente = \App\Models\DemandeRetrait::where('statut', 'en_attente')->count(); @endphp
+                @if($retraitsEnAttente > 0)
+                    <span class="sidebar-count">{{ $retraitsEnAttente }}</span>
+                @endif
             </a>
 
             <div class="sidebar-section">Contenu</div>

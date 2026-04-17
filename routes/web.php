@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\PaiementController as AdminPaiementController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\AccessCodeController as AdminAccessCodeController;
 use App\Http\Controllers\Admin\PlanController;
+use App\Http\Controllers\Admin\GestionRetraitsController;
 
 
 
@@ -87,6 +88,10 @@ Route::middleware('auth')->group(function () {
     // Activation d'un abonnement via code d'accès
     Route::post('/dashboard/activer', [DashboardController::class, 'activerCode'])->name('dashboard.activer');
 
+    // Soumission d'une demande de retrait
+    Route::post('/dashboard/retrait', [DashboardController::class, 'demanderRetrait'])->name('dashboard.retrait');
+
+
     // -------------------------------------------------------
     // Routes nécessitant un abonnement actif
     // -------------------------------------------------------
@@ -103,6 +108,9 @@ Route::middleware('auth')->group(function () {
 
     // Soumission d'un paiement (option A - formulaire de paiement manuel)
     Route::post('/dashboard/paiement', [DashboardController::class, 'soumettrePaiement'])->name('dashboard.paiement');
+
+    // Page d'upgrade de plan
+    Route::get('/upgrade-plan', [DashboardController::class, 'upgradePlan'])->name('dashboard.upgrade');
 
 });
 
@@ -144,6 +152,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // --- Plans d'abonnement ---
     Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
+
+    // --- Gestion des retraits ---
+    Route::get('/retraits', [GestionRetraitsController::class, 'index'])->name('retraits.index');
 
     // --- Paramètres ---
     Route::get('/parametres', function () {

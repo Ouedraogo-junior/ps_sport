@@ -64,9 +64,15 @@
                         <span style="font-family:var(--font-display); font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--c-muted);">
                             {{ $code->bookmakerLabel() }}
                         </span>
-                        <span style="font-family:var(--font-display); font-size:1rem; font-weight:800; letter-spacing:0.1em; color:var(--c-green);">
-                            {{ $code->code }}
-                        </span>
+                        <div style="display:flex; align-items:center; gap:0.75rem;">
+                            <span style="font-family:var(--font-display); font-size:1rem; font-weight:800; letter-spacing:0.1em; color:var(--c-green);">
+                                {{ $code->code }}
+                            </span>
+                            <button onclick="copierCode(this, '{{ $code->code }}')"
+                                    style="background:none; border:1px solid var(--c-border); color:var(--c-muted); padding:4px 10px; cursor:pointer; font-family:var(--font-display); font-size:0.65rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; transition:all 0.2s;">
+                                Copier
+                            </button>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -144,4 +150,23 @@
     @endif
 
 </div>
+
+@push('scripts')
+<script>
+function copierCode(btn, code) {
+    navigator.clipboard.writeText(code).then(() => {
+        const original = btn.textContent;
+        btn.textContent = '✓ Copié';
+        btn.style.borderColor = 'var(--c-green)';
+        btn.style.color = 'var(--c-green)';
+        setTimeout(() => {
+            btn.textContent = original;
+            btn.style.borderColor = 'var(--c-border)';
+            btn.style.color = 'var(--c-muted)';
+        }, 2000);
+    });
+}
+</script>
+@endpush
+
 @endsection
