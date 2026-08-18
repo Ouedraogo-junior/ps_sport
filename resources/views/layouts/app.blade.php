@@ -453,6 +453,10 @@
                         Coupons
                     </a>
                 @endauth
+                <a href="{{ route('investissement.detail') }}"
+                   class="nav-link {{ request()->routeIs('investissement.detail') ? 'active' : '' }}">
+                    Plan Investissement
+                </a>
                 @auth
                     @if(auth()->user()->isAdmin())
                         <a href="{{ route('admin.dashboard') }}"
@@ -534,6 +538,7 @@
             <a href="{{ route('calendrier') }}" class="nav-link">Calendrier</a>
             @auth
                 <a href="{{ route('coupons.index') }}" class="nav-link">Coupons</a>
+                <a href="{{ route('investissement.detail') }}" class="nav-link">Plan Investissement</a>
                 <a href="{{ route('dashboard') }}" class="nav-link">Mon espace</a>
                 @if(auth()->user()->isAdmin())
                     <a href="{{ route('admin.dashboard') }}" class="nav-link" style="color:var(--c-gold)">Admin</a>

@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\PaiementController as AdminPaiementController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\AccessCodeController as AdminAccessCodeController;
+use App\Http\Controllers\Admin\GestionAffiliationController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\GestionRetraitsController;
 
@@ -55,6 +56,10 @@ Route::get('/performances/captures', [CouponController::class, 'captures'])->nam
 // Page de performances publique (historique + stats, levier SEO)
 Route::get('/performances', [CouponController::class, 'performances'])->name('performances');
 
+Route::get('/investissement', function () {
+    return view('investissement');
+})->name('investissement.detail');
+
 // -------------------------------------------------------
 // Routes d'authentification (invités uniquement)
 // -------------------------------------------------------
@@ -88,9 +93,11 @@ Route::middleware('auth')->group(function () {
     // Activation d'un abonnement via code d'accès
     Route::post('/dashboard/activer', [DashboardController::class, 'activerCode'])->name('dashboard.activer');
 
-    // Soumission d'une demande de retrait
+    // Soumission d'une demande de retrait investissement
     Route::post('/dashboard/retrait', [DashboardController::class, 'demanderRetrait'])->name('dashboard.retrait');
 
+    // Soumission d'une demande de retrait affiliation
+    Route::post('/dashboard/retrait-affiliation', [DashboardController::class, 'demanderRetraitAffiliation'])->name('dashboard.retrait.affiliation');
 
     // -------------------------------------------------------
     // Routes nécessitant un abonnement actif
@@ -160,5 +167,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/parametres', function () {
         return view('admin.parametres');
     })->name('parametres.index');
+
+    // --- Affiliation ---
+    Route::get('/affiliation', [GestionAffiliationController::class, 'index'])->name('affiliation.index');
 
 });

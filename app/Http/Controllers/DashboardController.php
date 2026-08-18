@@ -8,6 +8,7 @@ use App\Models\Paiement;
 use App\Models\Plan;
 use App\Models\Parametre;
 use App\Models\SoldeInvestissement;
+use App\Models\SoldeAffiliation;
 use App\Models\DemandeRetrait;
 
 class DashboardController extends Controller
@@ -27,21 +28,32 @@ class DashboardController extends Controller
         $whatsappUrl = 'https://wa.me/' . $numero . '?text=' . urlencode($message);
 
         // Investissement
-        $solde              = SoldeInvestissement::pourUser($user->id);
-        $demandeEnAttente   = DemandeRetrait::where('user_id', $user->id)->where('statut', 'en_attente')->first();
-        $derniersRetraits   = DemandeRetrait::where('user_id', $user->id)->latest()->take(5)->get();
+        $solde            = SoldeInvestissement::pourUser($user->id);
+        $demandeEnAttente = DemandeRetrait::where('user_id', $user->id)->where('statut', 'en_attente')->first();
+        $derniersRetraits = DemandeRetrait::where('user_id', $user->id)->latest()->take(5)->get();
 
-        // Plan actif est-il investissement ?
-        $planActif = $abonnementActif
-            ? Plan::where('slug', $abonnementActif->plan)->first()
-            : null;
+        $planActif       = $abonnementActif ? Plan::where('slug', $abonnementActif->plan)->first() : null;
         $estInvestisseur = $planActif?->est_investissement ?? false;
         $seuilRetrait    = $planActif?->seuil_retrait ?? null;
+
+        // Affiliation
+        $referralCode      = $user->referralCode;
+        $nombreFilleuls    = $user->nombreFilleulsActifs();
+        $soldeAffiliation  = SoldeAffiliation::firstOrCreate(
+            ['user_id' => $user->id],
+            ['solde' => 0, 'total_cumule' => 0, 'filleuls_depuis_retrait' => 0]
+        );
+
+        $demandeAffiliationEnAttente = DemandeRetrait::where('user_id', $user->id)
+            ->where('source', 'affiliation')
+            ->where('statut', 'en_attente')
+            ->first();
 
         return view('dashboard', compact(
             'user', 'abonnementActif', 'historique', 'plans', 'dernierPaiement',
             'whatsappUrl', 'ussdOrange', 'ussdMoov',
-            'solde', 'demandeEnAttente', 'derniersRetraits', 'estInvestisseur', 'seuilRetrait'
+            'solde', 'demandeEnAttente', 'derniersRetraits', 'estInvestisseur', 'seuilRetrait',
+            'referralCode', 'nombreFilleuls', 'soldeAffiliation', 'demandeAffiliationEnAttente'
         ));
     }
 
@@ -66,27 +78,16 @@ class DashboardController extends Controller
             ->first();
 
         if (!$accessCode) {
-            return back()->withErrors([
-                'code' => 'Ce code est invalide ou ne correspond pas à votre compte.',
-            ])->withInput();
+            return back()->withErrors(['code' => 'Ce code est invalide ou ne correspond pas à votre compte.'])->withInput();
         }
-
         if ($accessCode->statut === 'utilise') {
-            return back()->withErrors([
-                'code' => 'Ce code a déjà été utilisé.',
-            ])->withInput();
+            return back()->withErrors(['code' => 'Ce code a déjà été utilisé.'])->withInput();
         }
-
         if ($accessCode->statut === 'revoque') {
-            return back()->withErrors([
-                'code' => 'Ce code a été révoqué. Contactez-nous via WhatsApp.',
-            ])->withInput();
+            return back()->withErrors(['code' => 'Ce code a été révoqué. Contactez-nous via WhatsApp.'])->withInput();
         }
-
         if (!$accessCode->isValide()) {
-            return back()->withErrors([
-                'code' => 'Ce code a expiré. Contactez-nous via WhatsApp pour en obtenir un nouveau.',
-            ])->withInput();
+            return back()->withErrors(['code' => 'Ce code a expiré. Contactez-nous via WhatsApp pour en obtenir un nouveau.'])->withInput();
         }
 
         $abonnement = $accessCode->activer(auth()->user()->id);
@@ -114,25 +115,20 @@ class DashboardController extends Controller
             'capture.max'        => 'La capture ne doit pas dépasser 3 Mo.',
         ]);
 
-        // Vérifier qu'il n'a pas déjà un paiement en attente
-        $dejaEnAttente = auth()->user()->paiements()
-            ->where('statut', 'en_attente')
-            ->exists();
-
+        $dejaEnAttente = auth()->user()->paiements()->where('statut', 'en_attente')->exists();
         if ($dejaEnAttente) {
             return back()->with('error', 'Vous avez déjà un paiement en attente de validation.');
         }
 
-        // Récupérer le montant depuis le plan
-        $plan   = Plan::where('slug', $request->plan)->firstOrFail();
-        $path   = $request->file('capture')->store('captures', 'public');
+        $plan = Plan::where('slug', $request->plan)->firstOrFail();
+        $path = $request->file('capture')->store('captures', 'public');
 
         Paiement::create([
-            'user_id'   => auth()->user()->id,
-            'plan'      => $plan->slug,
-            'montant'   => $plan->prix,
-            'operateur' => $request->operateur,
-            'statut'    => 'en_attente',
+            'user_id'      => auth()->user()->id,
+            'plan'         => $plan->slug,
+            'montant'      => $plan->prix,
+            'operateur'    => $request->operateur,
+            'statut'       => 'en_attente',
             'capture_path' => $path,
         ]);
 
@@ -141,22 +137,21 @@ class DashboardController extends Controller
     }
 
 
+    //------------------------------------------
+    // Valider retrait investissement 
+    //------------------------------------------
+
     public function demanderRetrait(Request $request)
     {
         $user  = auth()->user();
         $solde = SoldeInvestissement::pourUser($user->id);
 
-        $planActif = $user->abonnementActif
-            ? Plan::where('slug', $user->abonnementActif->plan)->first()
-            : null;
-
+        $planActif    = $user->abonnementActif ? Plan::where('slug', $user->abonnementActif->plan)->first() : null;
         $seuilRetrait = $planActif?->seuil_retrait;
 
-        // Vérifications
         if (!$planActif?->est_investissement) {
             return back()->with('error', 'Votre plan ne permet pas les retraits.');
         }
-
         if ($seuilRetrait && $solde->solde < $seuilRetrait) {
             return back()->with('error', 'Solde insuffisant. Minimum requis : ' . number_format($seuilRetrait, 0, ',', ' ') . ' FCFA.');
         }
@@ -171,8 +166,8 @@ class DashboardController extends Controller
             'operateur'        => ['required', 'in:orange,moov,wave'],
             'numero_telephone' => ['required', 'string', 'max:20'],
         ], [
-            'montant.min'  => 'Montant minimum : ' . number_format($seuilRetrait ?? 1, 0, ',', ' ') . ' FCFA.',
-            'montant.max'  => 'Montant supérieur à votre solde disponible.',
+            'montant.min' => 'Montant minimum : ' . number_format($seuilRetrait ?? 1, 0, ',', ' ') . ' FCFA.',
+            'montant.max' => 'Montant supérieur à votre solde disponible.',
         ]);
 
         DemandeRetrait::create([
@@ -181,15 +176,15 @@ class DashboardController extends Controller
             'operateur'        => $request->operateur,
             'numero_telephone' => $request->numero_telephone,
             'statut'           => 'en_attente',
+            'source'           => 'investissement',
         ]);
 
         return redirect()->route('dashboard')->with('success', 'Demande de retrait soumise. Traitement sous 24h.');
     }
-    
 
     public function upgradePlan()
     {
-        $user        = auth()->user();
+        $user            = auth()->user();
         $abonnementActif = $user->abonnementActif;
 
         if (!$abonnementActif) {
@@ -198,27 +193,60 @@ class DashboardController extends Controller
 
         $planActif = Plan::where('slug', $abonnementActif->plan)->first();
 
-        if (!$planActif?->est_investissement) {
-            return redirect()->route('dashboard');
-        }
+        $plansDisponibles = $planActif?->est_investissement
+            ? Plan::actifs()->where('est_investissement', true)->where('prix', '>', $planActif->prix)->orderBy('prix')->get()
+            : Plan::actifs()->where('est_investissement', true)->orderBy('prix')->get();
 
-        $plansSupérieurs = Plan::actifs()
-            ->where('est_investissement', true)
-            ->where('prix', '>', $planActif->prix)
-            ->orderBy('prix')
-            ->get();
-
-        $ussdOrange  = Parametre::get('ussd_orange', '*144#');
-        $ussdMoov    = Parametre::get('ussd_moov', '*555#');
-        $numero      = Parametre::get('whatsapp_numero', '22600000000');
-        $message     = Parametre::get('whatsapp_message', 'Bonjour, je viens de faire mon paiement pour un upgrade de plan.');
-        $whatsappUrl = 'https://wa.me/' . $numero . '?text=' . urlencode($message);
-
+        $ussdOrange      = Parametre::get('ussd_orange', '*144#');
+        $ussdMoov        = Parametre::get('ussd_moov', '*555#');
+        $numero          = Parametre::get('whatsapp_numero', '22600000000');
+        $message         = Parametre::get('whatsapp_message', 'Bonjour, je viens de faire mon paiement pour un plan d\'investissement.');
+        $whatsappUrl     = 'https://wa.me/' . $numero . '?text=' . urlencode($message);
         $dernierPaiement = $user->paiements()->latest()->first();
 
         return view('upgrade-plan', compact(
-            'planActif', 'plansSupérieurs', 'ussdOrange', 'ussdMoov', 'whatsappUrl', 'dernierPaiement'
+            'planActif', 'plansDisponibles', 'ussdOrange', 'ussdMoov', 'whatsappUrl', 'dernierPaiement'
         ));
     }
-    
+
+  //----------------------------------  
+  // Valider retrait affiliation
+  //---------------------------------- 
+    public function demanderRetraitAffiliation(Request $request)
+    {
+        $user             = auth()->user();
+        $soldeAffiliation = SoldeAffiliation::where('user_id', $user->id)->first();
+
+        if (!$soldeAffiliation || $soldeAffiliation->solde <= 0) {
+            return back()->with('error', 'Solde affiliation insuffisant.');
+        }
+
+        $request->validate([
+            'montant'          => ['required', 'numeric', 'min:1', 'max:' . $soldeAffiliation->solde],
+            'operateur'        => ['required', 'in:orange,moov,wave'],
+            'numero_telephone' => ['required', 'string', 'max:20'],
+        ], [
+            'montant.max' => 'Montant supérieur à votre solde affiliation disponible.',
+        ]);
+
+        $dejaEnAttente = DemandeRetrait::where('user_id', $user->id)
+            ->where('source', 'affiliation')
+            ->where('statut', 'en_attente')
+            ->exists();
+
+        if ($dejaEnAttente) {
+            return back()->with('error', 'Vous avez déjà une demande de retrait affiliation en attente.');
+        }
+
+        DemandeRetrait::create([
+            'user_id'          => $user->id,
+            'source'           => 'affiliation',
+            'montant'          => $request->montant,
+            'operateur'        => $request->operateur,
+            'numero_telephone' => $request->numero_telephone,
+            'statut'           => 'en_attente',
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Demande de retrait soumise. Traitement sous 24h.');
+    }
 }

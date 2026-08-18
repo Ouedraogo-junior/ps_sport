@@ -7,10 +7,10 @@
 
     <div style="margin-bottom:2rem;">
         <div style="font-family:var(--font-display); font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--c-green); margin-bottom:0.5rem;">
-            ● Upgrade Plan
+            ● {{ $planActif->est_investissement ? 'Upgrade Plan' : 'Investissement' }}
         </div>
         <h1 style="font-family:var(--font-display); font-size:1.8rem; font-weight:800; letter-spacing:0.03em; text-transform:uppercase; margin:0;">
-            Passer à un plan supérieur
+            {{ $planActif->est_investissement ? 'Passer à un plan supérieur' : 'Choisissez un plan d\'investissement' }}
         </h1>
         <p style="font-size:0.85rem; color:var(--c-muted); margin-top:0.75rem;">
             Plan actuel : <strong style="color:var(--c-text); text-transform:capitalize;">{{ $planActif->nom }}</strong>
@@ -22,18 +22,18 @@
         <div class="flash-error" style="margin-bottom:1.5rem;">✕ &nbsp;{{ session('error') }}</div>
     @endif
 
-    @if($plansSupérieurs->isEmpty())
+    @if($plansDisponibles->isEmpty())
         <div style="background:var(--c-bg2); border:1px solid var(--c-border); padding:2rem; text-align:center;">
             <div style="font-size:2rem; margin-bottom:1rem;">🏆</div>
             <div style="font-family:var(--font-display); font-weight:700; font-size:1rem; text-transform:uppercase; color:var(--c-muted);">
-                Vous êtes déjà au plan maximum.
+                {{ $planActif->est_investissement ? 'Vous êtes déjà au plan maximum.' : 'Aucun plan d\'investissement disponible pour le moment.' }}
             </div>
         </div>
     @else
 
         {{-- Plans disponibles --}}
         <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:2rem;">
-            @foreach($plansSupérieurs as $plan)
+            @foreach($plansDisponibles as $plan)
                 <div style="background:var(--c-bg2); border:1px solid var(--c-border-g); padding:1.25rem;">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
                         <div>
@@ -98,7 +98,7 @@
                                 Plan *
                             </label>
                             <div style="display:flex; flex-direction:column; gap:0.5rem;">
-                                @foreach($plansSupérieurs as $plan)
+                               @foreach($plansDisponibles as $plan)
                                     <label class="plan-label"
                                            style="display:flex; align-items:center; justify-content:space-between; background:var(--c-bg3); border:1px solid {{ old('plan') === $plan->slug ? 'var(--c-green)' : 'var(--c-border)' }}; padding:0.75rem 1rem; cursor:pointer; transition:border-color 0.2s;"
                                            onclick="this.style.borderColor='var(--c-green)'; document.querySelectorAll('.plan-label').forEach(el => { if(el !== this) el.style.borderColor='var(--c-border)' })">

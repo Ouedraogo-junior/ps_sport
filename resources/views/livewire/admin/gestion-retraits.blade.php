@@ -33,6 +33,7 @@
                     <th>Utilisateur</th>
                     <th>Montant</th>
                     <th>Opérateur</th>
+                    <th>Source</th>
                     <th>Numéro</th>
                     <th>Date</th>
                     <th>Statut</th>
@@ -49,22 +50,34 @@
                             </div>
                             <div style="font-size:0.78rem; color:var(--c-muted);">{{ $demande->user->telephone ?? '' }}</div>
                         </td>
+                        {{-- ------------------------------------------------------------}}
                         <td style="font-family:var(--font-display); font-weight:700; color:var(--c-green);">
                             {{ $demande->montantFormate() }}
                         </td>
+                        {{-- ------------------------------------------------------------}}
                         <td>
                             <span class="pill pill-gray">{{ $demande->operateurLabel() }}</span>
                         </td>
+                        {{-- ------------------------------------------------------------}}
+                        <td>
+                            <span class="pill {{ $demande->source === 'affiliation' ? 'pill-gold' : 'pill-gray' }}">
+                                {{ $demande->source === 'affiliation' ? 'Affiliation' : 'Investissement' }}
+                            </span>
+                        </td>
+                        {{-- ------------------------------------------------------------}}
                         <td style="font-family:monospace; color:var(--c-muted); font-size:0.85rem;">
                             {{ $demande->numero_telephone }}
                         </td>
+                        {{-- ------------------------------------------------------------}}
                         <td style="color:var(--c-muted); font-size:0.82rem;">
                             {{ $demande->created_at->format('d/m/Y H:i') }}
                         </td>
+                        {{-- ------------------------------------------------------------}}
                         <td>
                             @php $badge = $demande->statutBadge(); @endphp
                             <span class="pill {{ $badge['class'] }}">{{ $badge['label'] }}</span>
                         </td>
+                        {{-- ------------------------------------------------------------}}
                         <td>
                             @if($demande->statut === 'en_attente')
                                 <div style="display:flex; gap:6px;">
@@ -77,7 +90,7 @@
                                 <span style="color:var(--c-muted);">—</span>
                             @endif
                         </td>
-
+                        {{-- ------------------------------------------------------------}}
                         <td style="font-size:0.82rem; color:var(--c-muted);">
                             @if($demande->traitePar)
                                 <div style="font-family:var(--font-display); font-weight:700; color:var(--c-text);">
@@ -88,8 +101,10 @@
                                 —
                             @endif
                         </td>
+                        {{-- ------------------------------------------------------------}}
                     </tr>
                 @empty
+                {{-- ------------------------------------------------------------}}
                     <tr>
                         <td colspan="7" style="text-align:center; padding:3rem; color:var(--c-muted); font-family:var(--font-display); letter-spacing:0.06em; text-transform:uppercase; font-size:0.85rem;">
                             Aucune demande de retrait
@@ -112,6 +127,7 @@
                         <div style="font-family:var(--font-display); font-weight:700; font-size:1rem;">
                             {{ $demande->user->nom ?? $demande->user->telephone ?? '—' }}
                         </div>
+                        {{-- ------------------------------------------------------------}}
                         <div style="font-size:0.78rem; color:var(--c-muted);">{{ $demande->user->telephone ?? '' }}</div>
                     </div>
                     <span class="pill {{ $badge['class'] }}">{{ $badge['label'] }}</span>
@@ -123,19 +139,29 @@
                         <div style="font-family:var(--font-display); font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-bottom:2px;">Montant</div>
                         <span style="font-family:var(--font-display); font-weight:700; color:var(--c-green);">{{ $demande->montantFormate() }}</span>
                     </div>
+                    {{-- ------------------------------------------------------------}}
                     <div>
                         <div style="font-family:var(--font-display); font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-bottom:2px;">Opérateur</div>
                         <span class="pill pill-gray">{{ $demande->operateurLabel() }}</span>
                     </div>
+                    {{------------------------------------------------------------------}}
+                    <div>
+                        <div style="font-family:var(--font-display); font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-bottom:2px;">Source</div>
+                        <span class="pill {{ $demande->source === 'affiliation' ? 'pill-gold' : 'pill-gray' }}">
+                            {{ $demande->source === 'affiliation' ? 'Affiliation' : 'Investissement' }}
+                        </span>
+                    </div>
+                    {{-------------------------------------------------------------------}}
                     <div>
                         <div style="font-family:var(--font-display); font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-bottom:2px;">Numéro</div>
                         <span style="font-family:monospace; color:var(--c-muted); font-size:0.85rem;">{{ $demande->numero_telephone }}</span>
                     </div>
+                    {{-------------------------------------------------------------------}}
                     <div>
                         <div style="font-family:var(--font-display); font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-bottom:2px;">Date</div>
                         <span style="color:var(--c-muted); font-size:0.82rem;">{{ $demande->created_at->format('d/m/Y H:i') }}</span>
                     </div>
-
+                    {{-------------------------------------------------------------------}}
                     @if($demande->traitePar)
                         <div>
                             <div style="font-family:var(--font-display); font-size:0.65rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-bottom:2px;">Traité par</div>

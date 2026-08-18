@@ -494,6 +494,9 @@
         <a href="{{ route('admin.utilisateurs.index') }}" class="sidebar-link {{ request()->routeIs('admin.utilisateurs*') ? 'active' : '' }}">
             <span class="icon">👥</span> Utilisateurs
         </a>
+        <a href="{{ route('admin.affiliation.index') }}" class="sidebar-link {{ request()->routeIs('admin.affiliation') ? 'active' : '' }}">
+            <span class="icon">🔗</span> Affiliation
+        </a>
         <a href="{{ route('admin.plans.index') }}" class="sidebar-link {{ request()->routeIs('admin.plans*') ? 'active' : '' }}">
             <span class="icon">💰</span> Plans & Tarifs
         </a>
@@ -570,6 +573,9 @@
             <div class="sidebar-section">Membres</div>
             <a href="{{ route('admin.utilisateurs.index') }}" class="sidebar-link {{ request()->routeIs('admin.utilisateurs*') ? 'active' : '' }}">
                 <span class="icon">👥</span> Utilisateurs
+            </a>
+            <a href="{{ route('admin.affiliation.index') }}" class="sidebar-link {{ request()->routeIs('admin.affiliation') ? 'active' : '' }}">
+                <span class="icon">🔗</span> Affiliation
             </a>
             <a href="{{ route('admin.plans.index') }}" class="sidebar-link {{ request()->routeIs('admin.plans*') ? 'active' : '' }}">
                 <span class="icon">💰</span> Plans & Tarifs

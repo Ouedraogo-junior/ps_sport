@@ -49,12 +49,20 @@ class GestionRetraits extends Component
             return;
         }
 
-        // Vérifier que le solde est suffisant
-        $solde = \App\Models\SoldeInvestissement::pourUser($demande->user_id);
-        if ($solde->solde < $demande->montant) {
-            session()->flash('error', 'Solde insuffisant pour cet utilisateur.');
-            $this->fermerModal();
-            return;
+        if ($demande->source === 'affiliation') {
+            $solde = \App\Models\SoldeAffiliation::where('user_id', $demande->user_id)->first();
+            if (!$solde || $solde->solde < $demande->montant) {
+                session()->flash('error', 'Solde affiliation insuffisant.');
+                $this->fermerModal();
+                return;
+            }
+        } else {
+            $solde = \App\Models\SoldeInvestissement::pourUser($demande->user_id);
+            if ($solde->solde < $demande->montant) {
+                session()->flash('error', 'Solde insuffisant pour cet utilisateur.');
+                $this->fermerModal();
+                return;
+            }
         }
 
         $demande->valider(auth()->user()->id);

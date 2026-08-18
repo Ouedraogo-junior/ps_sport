@@ -68,8 +68,8 @@ class AccessCode extends Model
         $fin   = Abonnement::calculerDateFin($this->plan, $debut);
 
         Abonnement::where('user_id', $targetUserId)
-            ->where('statut', 'actif')
-            ->update(['statut' => 'expire']);
+                    ->where('statut', 'actif')
+                    ->update(['statut' => 'expire']);
 
         $abonnement = Abonnement::create([
             'user_id'    => $targetUserId,
@@ -83,6 +83,11 @@ class AccessCode extends Model
             'statut'  => 'utilise',
             'user_id' => $targetUserId,
         ]);
+
+        // ── Affiliation ──────────────────────────────────
+        app(\App\Services\AffiliateService::class)->traiterAffiliation($abonnement);
+        app(\App\Services\AffiliateService::class)->genererCodeSiAbsent($targetUserId);
+        // ─────────────────────────────────────────────────
 
         return $abonnement;
     }

@@ -74,19 +74,50 @@
 <div style="max-width:960px; margin:0 auto; padding:2rem 1rem;">
 
     {{-- En-tête --}}
-    <div style="margin-bottom:2rem;">
-        <div style="font-family:var(--font-display); font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--c-green); margin-bottom:0.5rem;">
-            ● Mon espace
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:2rem; flex-wrap:wrap;">
+        <div>
+            <div style="font-family:var(--font-display); font-size:0.75rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--c-green); margin-bottom:0.5rem;">
+                ● Mon espace
+            </div>
+            <h1 class="dash-title" style="font-family:var(--font-display); font-size:2rem; font-weight:800; letter-spacing:0.03em; text-transform:uppercase; margin:0;">
+                Bonjour, {{ $user->nom ?? $user->telephone }} 👋
+            </h1>
         </div>
-        <h1 class="dash-title" style="font-family:var(--font-display); font-size:2rem; font-weight:800; letter-spacing:0.03em; text-transform:uppercase; margin:0;">
-            Bonjour, {{ $user->nom ?? $user->telephone }} 👋
-        </h1>
+       @if($abonnementActif)
+            <a href="{{ route('dashboard.upgrade') }}"
+            style="display:inline-flex; align-items:center; gap:6px; background:transparent; border:1px solid var(--c-gold); color:var(--c-gold); padding:9px 18px; font-family:var(--font-display); font-weight:700; font-size:0.82rem; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; transition:all 0.2s; white-space:nowrap;"
+            onmouseover="this.style.background='rgba(255,214,0,0.08)'"
+            onmouseout="this.style.background='transparent'">
+                @if($estInvestisseur)
+                    ⬆ Upgrade Plan
+                @else
+                    💰 Investir
+                @endif
+            </a>
+        @endif
     </div>
 
     {{-- Flash messages --}}
     @if(session('error'))
         <div class="flash-error" style="margin-bottom:1.5rem;">✕ &nbsp;{{ session('error') }}</div>
     @endif
+
+
+    <div style="background:rgba(255,214,0,0.06); border:1px solid rgba(255,214,0,0.25); padding:1rem 1.25rem; margin-bottom:1.5rem; display:flex; align-items:flex-start; gap:0.75rem;">
+        <span style="font-size:1rem; flex-shrink:0;">💡</span>
+        <div style="font-size:0.83rem; color:var(--c-muted); line-height:1.6;">
+            <strong style="font-family:var(--font-display); font-weight:700; color:var(--c-gold); ...">
+                Plans d'investissement
+            </strong><br>
+                Les plans d'investissement sont accessibles à partir d'un abonnement de
+            <strong style="color:var(--c-text);">10 000 FCFA</strong>.
+                Ils vous permettent de générer des gains journaliers.
+            <a href="{{ route('investissement.detail') }}"
+                style="color:var(--c-green); font-family:var(--font-display); font-weight:700; font-size:0.8rem; text-decoration:none; margin-left:4px;">
+                En savoir plus →
+            </a>
+        </div>
+    </div>
 
     <div class="dash-grid">
 
@@ -201,6 +232,14 @@
             {{-- Bloc investissement --}}
             @include('partials.dashboard-investissement')
 
+
+            {{-- Bloc affiliation --}}
+            @include('partials.dashboard-affiliation', [
+                'referralCode'    => $referralCode,
+                'nombreFilleuls'  => $nombreFilleuls,
+                'soldeAffiliation'=> $soldeAffiliation,
+            ])
+
             {{-- Infos compte --}}
             <div style="background:var(--c-bg2); border:1px solid var(--c-border); padding:1.5rem;">
                 <div style="font-family:var(--font-display); font-size:0.72rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--c-muted); margin-bottom:1rem;">
@@ -246,14 +285,14 @@
                     </a>
                 </div>
 
-                @if($estInvestisseur)
+                {{-- @if($estInvestisseur)
                     <a href="{{ route('dashboard.upgrade') }}"
                     style="display:flex; align-items:center; justify-content:center; width:100%; margin-top:0.75rem; background:transparent; border:1px solid var(--c-gold); color:var(--c-gold); padding:11px; font-family:var(--font-display); font-weight:700; font-size:0.82rem; letter-spacing:0.08em; text-transform:uppercase; text-decoration:none; transition:all 0.2s;"
                     onmouseover="this.style.background='rgba(255,193,7,0.08)'"
                     onmouseout="this.style.background='transparent'">
                         ⬆ Upgrade Plan
                     </a>
-                @endif
+                @endif --}}
 
             @else
 
@@ -504,5 +543,27 @@
     </div>
 
 </div>
+
+@push('scripts')
+<script>
+function copierCode(code) {
+    navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('btn-copier-code');
+        btn.textContent = 'Copié ✓';
+        btn.style.background = 'var(--c-green-dim)';
+        setTimeout(() => { btn.textContent = 'Copier'; btn.style.background = 'var(--c-green)'; }, 2000);
+    });
+}
+
+function copierLien(lien) {
+    navigator.clipboard.writeText(lien).then(() => {
+        const btn = document.getElementById('btn-copier-lien');
+        btn.textContent = 'Copié ✓';
+        btn.style.color = 'var(--c-green)';
+        setTimeout(() => { btn.textContent = 'Copier'; btn.style.color = 'var(--c-muted)'; }, 2000);
+    });
+}
+</script>
+@endpush
 
 @endsection

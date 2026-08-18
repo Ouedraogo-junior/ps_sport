@@ -99,7 +99,11 @@
     </div>
 
     <div style="text-align:center; margin-top:1.5rem; font-size:0.82rem; color:var(--c-muted);">
-        Gains crédités automatiquement chaque jour &nbsp;•&nbsp; Retrait via 🟠 Orange Money &nbsp;&amp;&nbsp; 🔵 Moov Money
+            Gains crédités automatiquement chaque jour &nbsp;•&nbsp; Retrait via 🟠 Orange Money &nbsp;&amp;&nbsp; 🔵 Moov Money <br>
+      <a href="{{ route('investissement.detail') }}"
+            style="color:var(--c-green); font-family:var(--font-display); font-weight:700; font-size:1rem; text-decoration:none; margin-left:4px;">
+            En savoir plus →
+      </a>
     </div>
 
 </section>

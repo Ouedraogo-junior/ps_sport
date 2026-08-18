@@ -10,6 +10,7 @@ class DemandeRetrait extends Model
 
     protected $fillable = [
         'user_id',
+        'source',
         'montant',
         'operateur',
         'numero_telephone',
@@ -36,17 +37,30 @@ class DemandeRetrait extends Model
     // Valider la demande — débite le solde + enregistre la transaction
     public function valider(int $adminId): void
     {
-        //dd($adminId);
-        $solde = SoldeInvestissement::pourUser($this->user_id);
-        $solde->debiter($this->montant);
+        if ($this->source === 'affiliation') {
+            $solde = SoldeAffiliation::where('user_id', $this->user_id)->firstOrFail();
+            $solde->decrement('solde', $this->montant);
 
-        TransactionSolde::enregistrerRetrait($this->user_id, $this->montant);
+            TransactionAffiliation::create([
+                'user_id'     => $this->user_id,
+                'type'        => 'retrait',
+                'montant'     => $this->montant,
+                'description' => 'Retrait Mobile Money',
+            ]);
+
+            app(\App\Services\AffiliateService::class)->reinitialiserCompteur($this->user_id);
+        } else {
+            $solde = SoldeInvestissement::pourUser($this->user_id);
+            $solde->debiter($this->montant);
+            TransactionSolde::enregistrerRetrait($this->user_id, $this->montant);
+        }
 
         $this->update([
             'statut'     => 'valide',
             'traite_par' => $adminId,
         ]);
     }
+
 
     // Rejeter la demande
     public function rejeter(int $adminId, ?string $note = null): void

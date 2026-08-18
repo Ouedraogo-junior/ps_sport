@@ -108,6 +108,27 @@
                     >
                 </div>
 
+                {{-- Code parrain (optionnel) --}}
+                <div style="margin-bottom: 1.75rem;">
+                    <label style="display: block; font-family: var(--font-display); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: 0.5rem;">
+                        Code de parrainage <span style="color: var(--c-muted); font-weight: 400;">(optionnel)</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="code_parrain"
+                        value="{{ old('code_parrain', request('ref')) }}"
+                        placeholder="Ex: ZEN-AB12CD"
+                        style="width: 100%; background: var(--c-bg3); border: 1px solid {{ $errors->has('code_parrain') ? 'var(--c-danger)' : 'var(--c-border)' }}; color: var(--c-text); padding: 11px 12px; font-family: monospace; font-size: 0.95rem; outline: none; transition: border-color 0.2s; text-transform: uppercase; letter-spacing: 0.05em;"
+                        onfocus="this.style.borderColor='var(--c-green)'"
+                        onblur="this.style.borderColor='{{ $errors->has('code_parrain') ? 'var(--c-danger)' : 'var(--c-border)' }}'"
+                    >
+                    @error('code_parrain')
+                        <div style="color: var(--c-danger); font-size: 0.8rem; margin-top: 0.4rem; font-family: var(--font-display); font-weight: 600; letter-spacing: 0.04em;">
+                            ✕ {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+
                 {{-- Submit --}}
                 <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 13px; font-size: 1rem;">
                     Créer mon compte
