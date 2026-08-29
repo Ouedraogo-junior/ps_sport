@@ -3,7 +3,7 @@
 @section('title', 'Toutes les captures gagnantes')
 
 @section('content')
-<div style="max-width:960px; margin:0 auto; padding:2rem 1.5rem;">
+<div x-data="{ lightboxOpen: false, lightboxSrc: '' }" style="max-width:960px; margin:0 auto; padding:2rem 1.5rem;">
 
     <div style="margin-bottom:2rem;">
         <a href="{{ route('performances') }}" style="font-family:var(--font-display); font-size:0.75rem; color:var(--c-muted); text-decoration:none; letter-spacing:0.08em; text-transform:uppercase;">
@@ -19,8 +19,9 @@
 
     <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1rem;">
         @forelse($captures as $coupon)
-            <a href="{{ Storage::url($coupon->capture_gagnant) }}" target="_blank"
-               style="display:block; border:1px solid var(--c-border); overflow:hidden; text-decoration:none;">
+            <a href="{{ Storage::url($coupon->capture_gagnant) }}"
+               @click.prevent="lightboxSrc = @js(Storage::url($coupon->capture_gagnant)); lightboxOpen = true"
+               style="display:block; border:1px solid var(--c-border); overflow:hidden; text-decoration:none; cursor:pointer;">
                 <img src="{{ Storage::url($coupon->capture_gagnant) }}"
                      style="width:100%; height:150px; object-fit:cover; display:block;">
                 <div style="padding:8px 10px; background:var(--c-bg2);">
@@ -59,5 +60,31 @@
         </div>
     @endif
 
+    {{-- Lightbox image (capture gagnante) --}}
+    <div x-show="lightboxOpen"
+         x-transition.opacity
+         @keydown.escape.window="lightboxOpen = false"
+         @click.self="lightboxOpen = false"
+         class="lightbox-overlay"
+         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:9999; padding:2rem;">
+        <button @click="lightboxOpen = false"
+                aria-label="Fermer"
+                style="position:absolute; top:1.25rem; right:1.25rem; width:40px; height:40px; background:var(--c-bg2); border:1px solid var(--c-border); color:var(--c-text); font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;"
+                onmouseover="this.style.borderColor='var(--c-green)'"
+                onmouseout="this.style.borderColor='var(--c-border)'">✕</button>
+        <img :src="lightboxSrc" alt="Capture gagnante"
+             style="max-width:100%; max-height:100%; object-fit:contain; border:1px solid var(--c-border);"
+             @click.stop>
+    </div>
+
 </div>
+
+<style>
+    .lightbox-overlay {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
 @endsection

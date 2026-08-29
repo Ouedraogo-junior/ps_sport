@@ -110,7 +110,7 @@
             ⚠ Information importante
         </p>
         <p style="color:var(--c-muted); font-size:0.85rem; margin:0; line-height:1.7;">
-            Le gain est de <strong style="color:var(--c-text);">10 CFA par jour</strong> pour un investissement de 10 000 FCFA.
+            Le gain est de <strong style="color:var(--c-text);">{{ number_format($tauxInvestissementDefaut, 0, ',', ' ') }} CFA par jour</strong> pour un investissement de 10 000 FCFA.
             Les gains sont calculés sur la base de la durée de votre plan.
             Vous pouvez augmenter votre investissement à tout moment pour maximiser vos revenus.
         </p>
@@ -121,7 +121,7 @@
 
 @push('scripts')
 <script>
-const RATE_FIXED = 10; // 10 CFA par jour pour 10 000 FCFA
+const RATE_FIXED = {{ (float) $tauxInvestissementDefaut }}; // FCFA/jour pour 10 000 FCFA — piloté depuis Paramètres admin
 const plans = [
     { nom: '10 000 F',  montant: 10000  },
     { nom: '25 000 F',  montant: 25000  },

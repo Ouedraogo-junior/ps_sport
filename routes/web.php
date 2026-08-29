@@ -57,7 +57,9 @@ Route::get('/performances/captures', [CouponController::class, 'captures'])->nam
 Route::get('/performances', [CouponController::class, 'performances'])->name('performances');
 
 Route::get('/investissement', function () {
-    return view('investissement');
+    return view('investissement', [
+        'tauxInvestissementDefaut' => \App\Models\Parametre::get('taux_investissement_defaut', 10),
+    ]);
 })->name('investissement.detail');
 
 // -------------------------------------------------------

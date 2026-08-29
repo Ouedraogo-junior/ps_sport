@@ -5,7 +5,7 @@
 
 @section('content')
 
-<div style="max-width:960px; margin:0 auto; padding:2rem 1.5rem;">
+<div x-data="{ lightboxOpen: false, lightboxSrc: '' }" style="max-width:960px; margin:0 auto; padding:2rem 1.5rem;">
 
     {{-- En-tête --}}
     <div style="margin-bottom:2rem;">
@@ -21,26 +21,26 @@
     </div>
 
     {{-- Stats globales --}}
-    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; margin-bottom:2rem;">
+    <div class="perf-stats-grid" style="margin-bottom:2rem;">
 
-        <div style="background:var(--c-bg2); border:1px solid var(--c-border-g); padding:1.5rem; text-align:center;">
-            <div style="font-family:var(--font-display); font-size:2.5rem; font-weight:800; color:var(--c-green); line-height:1;">{{ $tauxReussite }}%</div>
+        <div style="background:var(--c-bg2); border:1px solid var(--c-border-g); padding:1.5rem; text-align:center; min-width:0;">
+            <div class="stat-number" style="font-family:var(--font-display); font-size:2.5rem; font-weight:800; color:var(--c-green); line-height:1;">{{ $tauxReussite }}%</div>
             <div style="font-family:var(--font-display); font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-top:0.5rem;">Taux global</div>
             <div style="margin-top:0.75rem; height:3px; background:var(--c-bg3); overflow:hidden;">
                 <div style="height:100%; width:{{ $tauxReussite }}%; background:var(--c-green);"></div>
             </div>
         </div>
 
-        <div style="background:var(--c-bg2); border:1px solid var(--c-border); padding:1.5rem; text-align:center;">
-            <div style="font-family:var(--font-display); font-size:2.5rem; font-weight:800; color:var(--c-gold); line-height:1;">{{ $taux30j }}%</div>
+        <div style="background:var(--c-bg2); border:1px solid var(--c-border); padding:1.5rem; text-align:center; min-width:0;">
+            <div class="stat-number" style="font-family:var(--font-display); font-size:2.5rem; font-weight:800; color:var(--c-gold); line-height:1;">{{ $taux30j }}%</div>
             <div style="font-family:var(--font-display); font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-top:0.5rem;">Taux 30 jours</div>
             <div style="margin-top:0.75rem; height:3px; background:var(--c-bg3); overflow:hidden;">
                 <div style="height:100%; width:{{ $taux30j }}%; background:var(--c-gold);"></div>
             </div>
         </div>
 
-        <div style="background:var(--c-bg2); border:1px solid var(--c-border); padding:1.5rem; text-align:center;">
-            <div style="font-family:var(--font-display); font-size:2.5rem; font-weight:800; color:var(--c-text); line-height:1;">{{ $couponsGagnes }}/{{ $couponsTermines }}</div>
+        <div style="background:var(--c-bg2); border:1px solid var(--c-border); padding:1.5rem; text-align:center; min-width:0;">
+            <div class="stat-number" style="font-family:var(--font-display); font-size:2.5rem; font-weight:800; color:var(--c-text); line-height:1;">{{ $couponsGagnes }}/{{ $couponsTermines }}</div>
             <div style="font-family:var(--font-display); font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-top:0.5rem;">Gagnés / Terminés</div>
         </div>
 
@@ -62,8 +62,9 @@
 
         <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:0.75rem;">
             @foreach($captures as $coupon)
-                <a href="{{ Storage::url($coupon->capture_gagnant) }}" target="_blank"
-                style="display:block; border:1px solid var(--c-border); overflow:hidden; position:relative; text-decoration:none;">
+                <a href="{{ Storage::url($coupon->capture_gagnant) }}"
+                @click.prevent="lightboxSrc = @js(Storage::url($coupon->capture_gagnant)); lightboxOpen = true"
+                style="display:block; border:1px solid var(--c-border); overflow:hidden; position:relative; text-decoration:none; cursor:pointer;">
                     <img src="{{ Storage::url($coupon->capture_gagnant) }}"
                         style="width:100%; height:120px; object-fit:cover; display:block;">
                     <div style="padding:6px 8px; background:var(--c-bg2);">
@@ -155,8 +156,9 @@
                         {{-- Capture --}}
                         <td style="padding:12px 14px; text-align:center;">
                             @if($coupon->capture_gagnant)
-                                <a href="{{ Storage::url($coupon->capture_gagnant) }}" target="_blank"
-                                style="font-family:var(--font-display); font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--c-gold); text-decoration:none;">
+                                <a href="{{ Storage::url($coupon->capture_gagnant) }}"
+                                @click.prevent="lightboxSrc = @js(Storage::url($coupon->capture_gagnant)); lightboxOpen = true"
+                                style="font-family:var(--font-display); font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--c-gold); text-decoration:none; cursor:pointer;">
                                     📷
                                 </a>
                             @else
@@ -212,6 +214,48 @@
         </div>
     @endguest
 
+    {{-- Lightbox image (capture gagnante) --}}
+    <div x-show="lightboxOpen"
+         x-transition.opacity
+         @keydown.escape.window="lightboxOpen = false"
+         @click.self="lightboxOpen = false"
+         class="lightbox-overlay"
+         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:9999; padding:2rem;">
+        <button @click="lightboxOpen = false"
+                aria-label="Fermer"
+                style="position:absolute; top:1.25rem; right:1.25rem; width:40px; height:40px; background:var(--c-bg2); border:1px solid var(--c-border); color:var(--c-text); font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;"
+                onmouseover="this.style.borderColor='var(--c-green)'"
+                onmouseout="this.style.borderColor='var(--c-border)'">✕</button>
+        <img :src="lightboxSrc" alt="Capture gagnante"
+             style="max-width:100%; max-height:100%; object-fit:contain; border:1px solid var(--c-border);"
+             @click.stop>
+    </div>
+
 </div>
+
+<style>
+    /* Grille des stats — corrige le débordement sur mobile (grid-item min-width:auto par défaut) */
+    .perf-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    /* Lightbox images */
+    .lightbox-overlay {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @media (max-width: 560px) {
+        .perf-stats-grid { gap: 0.5rem; }
+        .perf-stats-grid .stat-number { font-size: 1.5rem !important; }
+    }
+
+    @media (max-width: 380px) {
+        .perf-stats-grid { grid-template-columns: 1fr; }
+    }
+</style>
 
 @endsection

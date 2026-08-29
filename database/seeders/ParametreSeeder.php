@@ -29,6 +29,13 @@ class ParametreSeeder extends Seeder
                 'valeur'  => '*555#',
                 'libelle' => 'Code USSD Moov Money',
             ],
+            [
+                'cle'     => 'taux_investissement_defaut',
+                'valeur'  => '10',
+                'libelle' => 'Taux investissement simulateur (FCFA/jour pour 10 000 FCFA investis)',
+                'groupe'  => 'investissement',
+                'type'    => 'number',
+            ],
         ];
 
         foreach ($parametres as $p) {
