@@ -13,6 +13,7 @@ use App\Http\Controllers\CouponController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CalendrierController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PasswordController;
 
 // Controllers admin
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -66,7 +67,7 @@ Route::get('/investissement', function () {
 // Routes d'authentification (invités uniquement)
 // -------------------------------------------------------
 
-Route::middleware('guest')->group(function () {
+Route::middleware(['guest', 'no-cache'])->group(function () {
 
     // Inscription
     Route::get('/inscription', [RegisterController::class, 'showForm'])->name('register');
@@ -77,6 +78,13 @@ Route::middleware('guest')->group(function () {
     Route::post('/connexion', [LoginController::class, 'store'])->name('login.store');
 
 });
+
+// Page de bienvenue post-inscription (redirection Telegram) : l'utilisateur vient
+// d'être connecté via Auth::login(), donc PAS dans le groupe "guest" sinon il en
+// serait immédiatement redirigé ailleurs avant même de voir la page.
+Route::middleware('no-cache')
+    ->get('/inscription/bienvenue', [RegisterController::class, 'bienvenue'])
+    ->name('register.bienvenue');
 
 // Déconnexion (utilisateur connecté)
 Route::post('/deconnexion', [LoginController::class, 'destroy'])
@@ -100,6 +108,10 @@ Route::middleware('auth')->group(function () {
 
     // Soumission d'une demande de retrait affiliation
     Route::post('/dashboard/retrait-affiliation', [DashboardController::class, 'demanderRetraitAffiliation'])->name('dashboard.retrait.affiliation');
+
+    // Modification du mot de passe (utilisateur connecté)
+    Route::get('/mot-de-passe', [PasswordController::class, 'edit'])->name('password.edit');
+    Route::put('/mot-de-passe', [PasswordController::class, 'update'])->name('password.update');
 
     // -------------------------------------------------------
     // Routes nécessitant un abonnement actif

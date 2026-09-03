@@ -107,7 +107,7 @@
         {{-- Titre --}}
         <h1 style="font-family:var(--font-display); font-size:clamp(2rem, 6vw, 4.5rem); font-weight:800; letter-spacing:0.02em; text-transform:uppercase; line-height:1.05; margin-bottom:1.5rem;">
             Les meilleurs pronostics<br>
-            <span style="color:var(--c-green);">sportifs</span> au Burkina
+            <span style="color:var(--c-green);">sportifs</span>
         </h1>
 
         <p style="font-size:1rem; color:var(--c-muted); max-width:520px; margin:0 auto 2.5rem; line-height:1.8;">
@@ -503,7 +503,7 @@
         Prêt à gagner avec nous ?
     </h2>
     <p style="color:var(--c-muted); margin-bottom:2rem; font-size:0.95rem;">
-        Rejoignez nos abonnés et accédez aux meilleurs pronostics du Burkina.
+        Rejoignez nos abonnés et accédez aux meilleurs pronostics.
     </p>
     <a href="{{ route('register') }}" class="btn-primary" style="padding:14px 40px; font-size:1rem;">
         Créer mon compte →

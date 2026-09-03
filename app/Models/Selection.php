@@ -41,6 +41,42 @@ class Selection extends Model
         return 'Match non renseigné';
     }
 
+    // Libellé lisible du statut de la sélection
+    public function statutLabel(): string
+    {
+        return match($this->statut) {
+            'gagne'    => 'Gagné',
+            'perdu'    => 'Perdu',
+            'en_cours' => 'En cours',
+            'annule'   => 'Annulé',
+            default    => 'En attente',
+        };
+    }
+
+    // Symbole associé au statut
+    public function statutSymbole(): string
+    {
+        return match($this->statut) {
+            'gagne'    => '✓',
+            'perdu'    => '✕',
+            'en_cours' => '▶',
+            'annule'   => '—',
+            default    => '○',
+        };
+    }
+
+    // Couleur associée au statut (mêmes tokens que le thème global)
+    public function statutColor(): string
+    {
+        return match($this->statut) {
+            'gagne'    => 'var(--c-green)',
+            'perdu'    => 'var(--c-danger)',
+            'en_cours' => 'var(--c-gold)',
+            'annule'   => 'var(--c-muted)',
+            default    => 'var(--c-muted)',
+        };
+    }
+
     // Classe CSS Tailwind pour le statut
     public function statutBadge(): string
     {

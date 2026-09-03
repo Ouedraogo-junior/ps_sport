@@ -258,6 +258,43 @@
 
                 <div style="margin-bottom:1.5rem;">
                     <label style="display:block; font-family:var(--font-display); font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-bottom:0.4rem;">
+                        Image des événements du jour <span style="color:var(--c-border); font-weight:400;">(optionnel)</span>
+                    </label>
+                    <div style="font-size:0.78rem; color:var(--c-muted); margin-bottom:0.5rem;">
+                        Affichée sur la page du coupon — capture des matchs/événements sélectionnés.
+                    </div>
+
+                    <input wire:model="image_evenements" type="file" accept="image/*"
+                        style="width:100%; background:var(--c-bg3); border:1px solid var(--c-border); color:var(--c-muted); padding:8px 12px; font-family:var(--font-body); font-size:0.85rem; cursor:pointer;">
+
+                    @error('image_evenements')
+                        <div style="color:#ef4444; font-size:0.78rem; margin-top:0.3rem;">✕ {{ $message }}</div>
+                    @enderror
+
+                    {{-- Aperçu : image déjà enregistrée en mode édition --}}
+                    @if($modeEdition && $couponId && !$image_evenements)
+                        @php $couponImgEvenements = \App\Models\Coupon::find($couponId); @endphp
+                        @if($couponImgEvenements?->image_evenements)
+                            <div style="margin-top:0.6rem;">
+                                <div style="font-family:var(--font-display); font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--c-muted); margin-bottom:0.3rem;">Image actuelle</div>
+                                <img src="{{ Storage::url($couponImgEvenements->image_evenements) }}"
+                                    style="max-height:120px; border:1px solid var(--c-border); object-fit:contain;">
+                            </div>
+                        @endif
+                    @endif
+
+                    {{-- Aperçu : nouveau fichier sélectionné --}}
+                    @if($image_evenements && is_object($image_evenements))
+                        <div style="margin-top:0.6rem;">
+                            <div style="font-family:var(--font-display); font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--c-muted); margin-bottom:0.3rem;">Aperçu</div>
+                            <img src="{{ $image_evenements->temporaryUrl() }}"
+                                style="max-height:120px; border:1px solid var(--c-border); object-fit:contain;">
+                        </div>
+                    @endif
+                </div>
+
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:block; font-family:var(--font-display); font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--c-muted); margin-bottom:0.4rem;">
                         Capture d'écran <span style="color:var(--c-border); font-weight:400;">(optionnel)</span>
                     </label>
 

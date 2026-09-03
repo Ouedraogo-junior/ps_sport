@@ -66,11 +66,11 @@
         .navbar-inner {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 1.5rem;
+            padding: 10px 1.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 60px;
+            min-height: 60px;
         }
 
         .navbar-brand {
@@ -209,6 +209,8 @@
 
         /* Ticker live en haut de page */
         .ticker-bar {
+            position: relative;
+            z-index: 1;
             background: var(--c-green);
             color: #000;
             font-family: var(--font-display);
@@ -500,6 +502,13 @@
                                 Mon espace
                             </a>
 
+                            <a href="{{ route('password.edit') }}"
+                               style="display:block; padding:10px 16px; color:var(--c-muted); text-decoration:none; font-family:var(--font-display); font-size:0.85rem; letter-spacing:0.06em; text-transform:uppercase; border-bottom:1px solid var(--c-border); transition:color 0.2s;"
+                               onmouseover="this.style.color='var(--c-text)'"
+                               onmouseout="this.style.color='var(--c-muted)'">
+                                Mot de passe
+                            </a>
+
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
@@ -540,6 +549,7 @@
                 <a href="{{ route('coupons.index') }}" class="nav-link">Coupons</a>
                 <a href="{{ route('investissement.detail') }}" class="nav-link">Plan Investissement</a>
                 <a href="{{ route('dashboard') }}" class="nav-link">Mon espace</a>
+                <a href="{{ route('password.edit') }}" class="nav-link">Mot de passe</a>
                 @if(auth()->user()->isAdmin())
                     <a href="{{ route('admin.dashboard') }}" class="nav-link" style="color:var(--c-gold)">Admin</a>
                 @endif
@@ -590,7 +600,7 @@
                     {{ config('app.name') }}<span style="color:var(--c-green)">.</span>
                 </div>
                 <p style="color:var(--c-muted); font-size:0.85rem; margin-top:0.75rem; line-height:1.7;">
-                    Pronostics sportifs premium au Burkina Faso.
+                    Pronostics sportifs premium.
                     Paiement via Mobile Money.
                 </p>
             </div>

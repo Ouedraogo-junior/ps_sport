@@ -53,6 +53,10 @@ class GestionCoupons extends Component
     public ?string $capture_gagnant_path = null;
     public $capture_gagnant = null;
 
+    // Upload image des événements du jour (affichée sur la page du coupon)
+    public ?string $image_evenements_path = null;
+    public $image_evenements = null;
+
     // État modal capture
     public bool $showCaptureModal = false;
     public ?int $captureGagnantId = null;
@@ -80,6 +84,7 @@ class GestionCoupons extends Component
             'selections.*.cote'             => 'nullable|numeric|min:1',
             'capture_gagnant' => 'nullable|image|max:2048',
             'capture_gagnant_upload' => 'nullable|image|max:2048',
+            'image_evenements' => 'nullable|image|max:2048',
         ];
     }
 
@@ -142,6 +147,8 @@ class GestionCoupons extends Component
         $this->analyse       = $coupon->analyse ?? '';
         $this->capture_gagnant_path = $coupon->capture_gagnant ?? null;
         $this->capture_gagnant = null;
+        $this->image_evenements_path = $coupon->image_evenements ?? null;
+        $this->image_evenements = null;
 
         // Charger codes bookmakers
         $this->codes = [
@@ -192,6 +199,13 @@ class GestionCoupons extends Component
                 $data['capture_gagnant'] = $this->capture_gagnant->store('coupons', 'public');
             } elseif ($this->capture_gagnant_path) {
                 $data['capture_gagnant'] = $this->capture_gagnant_path; // conserver l'existante
+            }
+
+            // Ajout image des événements du jour si uploadée
+            if ($this->image_evenements && is_object($this->image_evenements)) {
+                $data['image_evenements'] = $this->image_evenements->store('coupons', 'public');
+            } elseif ($this->image_evenements_path) {
+                $data['image_evenements'] = $this->image_evenements_path; // conserver l'existante
             }
 
             if ($this->modeEdition) {
@@ -340,6 +354,8 @@ class GestionCoupons extends Component
         $this->resetValidation();
         $this->capture_gagnant = null;
         $this->capture_gagnant_path = null;
+        $this->image_evenements = null;
+        $this->image_evenements_path = null;
     }
 
     private function resetPage(): void

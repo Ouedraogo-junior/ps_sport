@@ -44,7 +44,7 @@ class HomeController extends Controller
 
         // SEO
         SEO::setTitle('Pronostics Sportifs Premium — ' . config('app.name'));
-        SEO::setDescription('Coupons sportifs analysés quotidiennement au Burkina Faso. Paiement via Orange Money et Moov Money.');
+        SEO::setDescription('Coupons sportifs analysés quotidiennement. Paiement via Orange Money et Moov Money.');
         SEO::opengraph()->setUrl(route('home'));
 
         return view('welcome', compact(

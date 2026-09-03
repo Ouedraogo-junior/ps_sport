@@ -35,7 +35,7 @@
                     </label>
                     <div style="position: relative;">
                         <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--c-muted); font-size: 0.9rem;">
-                            🇧🇫
+                           📱
                         </span>
                         <input
                             type="tel"

@@ -10,11 +10,11 @@ return [
          * The default configurations to be used by the meta generator.
          */
         'defaults'       => [
-            'title'        => config('app.name') . ' — Pronostics Sportifs Burkina',
+            'title'        => config('app.name') . ' — Pronostics Sportifs',
             'titleBefore'  => false, // Put defaults.title before page title, like 'It's Over 9000! - Dashboard'
-            'description'  => 'Pronostics sportifs premium au Burkina Faso. Coupons analysés quotidiennement. Paiement via Orange Money et Moov Money.',
+            'description'  => 'Pronostics sportifs premium. Coupons analysés quotidiennement. Paiement via Orange Money et Moov Money.',
             'separator'    => ' | ',
-            'keywords'     => ['pronostics', 'paris sportifs', 'burkina faso', 'coupons', 'football'],
+            'keywords'     => ['pronostics', 'paris sportifs', 'coupons', 'football'],
             'canonical'    => 'current',
             'robots'       => false, // Set to 'all', 'none' or any combination of index/noindex and follow/nofollow
         ],
@@ -38,7 +38,7 @@ return [
          */
         'defaults' => [
             'title'       => config('app.name') . ' — Pronostics Sportifs',
-            'description' => 'Pronostics sportifs premium au Burkina Faso.',
+            'description' => 'Pronostics sportifs premium.',
             'url'         => false, // Set null for using Url::current(), set false to total remove
             'type'        => 'website',
             'site_name'   => config('app.name'),

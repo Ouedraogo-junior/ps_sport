@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -35,8 +34,10 @@ class LoginController extends Controller
             ]);
         }
 
-        // Normaliser le numéro
-        $telephone = preg_replace('/^(\+226|00226|226)/', '', $request->telephone);
+        // Normaliser le numéro (espaces/tirets, puis indicatif Burkina Faso si présent —
+        // même logique qu'à l'inscription, pour que la comparaison en base soit fiable)
+        $telephone = preg_replace('/[\s\-]/', '', (string) $request->telephone);
+        $telephone = preg_replace('/^(\+226|00226|226)/', '', $telephone);
 
         $credentials = [
             'telephone' => $telephone,

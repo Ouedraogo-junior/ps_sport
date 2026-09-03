@@ -16,6 +16,7 @@ class Coupon extends Model
         'niveau_risque',
         'description',
         'analyse',
+        'image_evenements',
         'statut_publication',
         'statut_resultat',
         'cree_par',
@@ -58,6 +59,26 @@ class Coupon extends Model
             'risque'  => 'Risqué',
             default   => $this->niveau_risque,
         };
+    }
+
+    // Couleur associée au niveau de risque (mêmes tokens que le thème global)
+    public function niveauRisqueColor(): string
+    {
+        return match($this->niveau_risque) {
+            'faible' => 'var(--c-green)',
+            'modere' => 'var(--c-gold)',
+            'risque' => 'var(--c-danger)',
+            default  => 'var(--c-muted)',
+        };
+    }
+
+    // Produit des cotes de toutes les sélections ayant une cote renseignée
+    public function oddsCombinees(): float
+    {
+        return $this->selections
+            ->pluck('cote')
+            ->filter(fn ($cote) => !is_null($cote) && $cote > 0)
+            ->reduce(fn ($acc, $cote) => $acc * $cote, 1.0);
     }
 
     // Classe CSS Tailwind pour le badge de niveau de risque

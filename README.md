@@ -212,7 +212,7 @@ Cette commande lance en parallèle le serveur Laravel, le worker de file d'atten
 
 ## Rôles et authentification
 
-Connexion par **numéro de téléphone** (identifiant d'authentification, format burkinabè) + mot de passe, via formulaire classique Laravel (sessions, pas d'API token).
+Connexion par **numéro de téléphone** (identifiant d'authentification) + mot de passe, via formulaire classique Laravel (sessions, pas d'API token).
 
 | Rôle | Accès |
 |---|---|

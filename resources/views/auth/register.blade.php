@@ -34,19 +34,22 @@
                         Numéro de téléphone <span style="color: var(--c-green);">*</span>
                     </label>
                     <div style="position: relative;">
-                        <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--c-muted); font-size: 0.9rem; font-family: var(--font-display); font-weight: 600;">
-                            🇧🇫
+                        <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--c-muted); font-size: 0.9rem;">
+                           📱
                         </span>
                         <input
                             type="tel"
                             name="telephone"
                             value="{{ old('telephone') }}"
-                            placeholder="70 XX XX XX"
+                            placeholder="Ex: 70123456"
                             autocomplete="tel"
                             style="width: 100%; background: var(--c-bg3); border: 1px solid {{ $errors->has('telephone') ? 'var(--c-danger)' : 'var(--c-border)' }}; color: var(--c-text); padding: 11px 12px 11px 40px; font-family: var(--font-body); font-size: 1rem; outline: none; transition: border-color 0.2s;"
                             onfocus="this.style.borderColor='var(--c-green)'"
                             onblur="this.style.borderColor='{{ $errors->has('telephone') ? 'var(--c-danger)' : 'var(--c-border)' }}'"
                         >
+                    </div>
+                    <div style="color: var(--c-muted); font-size: 0.75rem; margin-top: 0.35rem;">
+                        Numéro de téléphone
                     </div>
                     @error('telephone')
                         <div style="color: var(--c-danger); font-size: 0.8rem; margin-top: 0.4rem; font-family: var(--font-display); font-weight: 600; letter-spacing: 0.04em;">

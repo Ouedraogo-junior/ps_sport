@@ -29,11 +29,11 @@
         <div style="display:flex; flex-direction:column; gap:1rem;">
             @foreach($coupons as $coupon)
                 <a href="{{ route('coupons.show', $coupon) }}"
-                   style="text-decoration:none; color:inherit;">
-                    <div class="card" style="padding:1.5rem; display:flex; justify-content:space-between; align-items:center; gap:1.5rem; flex-wrap:wrap;">
+                   style="display:block; text-decoration:none; color:inherit;">
+                    <div class="card coupon-card" style="padding:1.5rem;">
 
                         {{-- Infos principales --}}
-                        <div style="flex:1; min-width:200px;">
+                        <div class="coupon-card-main">
                             <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem; flex-wrap:wrap;">
                                 {{-- Badge risque --}}
                                 <span class="badge-{{ $coupon->niveau_risque }}"
@@ -66,7 +66,7 @@
                         </div>
 
                         {{-- Méta droite --}}
-                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.75rem; min-width:140px;">
+                        <div class="coupon-card-meta">
 
                             {{-- Nombre de sélections --}}
                             @if($coupon->selections->count() > 0)
@@ -92,7 +92,7 @@
                             </div>
 
                             {{-- Flèche --}}
-                            <span style="color:var(--c-green); font-size:1.1rem;">→</span>
+                            <span class="coupon-card-arrow" style="color:var(--c-green); font-size:1.1rem;">→</span>
                         </div>
 
                     </div>
@@ -109,4 +109,51 @@
     @endif
 
 </div>
+
+<style>
+    .coupon-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1.25rem;
+    }
+    .coupon-card-main {
+        flex: 1 1 240px;
+        min-width: 0; /* permet au titre/description de rétrécir sans forcer de débordement */
+    }
+    .coupon-card-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.6rem;
+        flex: 0 0 auto;
+    }
+
+    @media (max-width: 640px) {
+        .coupon-card {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0;
+        }
+        .coupon-card-main {
+            /* En colonne, le flex-basis de 240px (pensé pour la largeur en desktop)
+               s'applique à la hauteur et forçait un vide énorme sous le texte. */
+            flex: 1 1 auto;
+        }
+        .coupon-card-meta {
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0.6rem 1rem;
+            width: 100%;
+            border-top: 1px solid var(--c-border);
+            margin-top: 0.35rem;
+            padding-top: 0.35rem;
+        }
+        /* La flèche est redondante sur mobile : toute la card est déjà cliquable */
+        .coupon-card-arrow { display: none; }
+    }
+</style>
+
 @endsection
